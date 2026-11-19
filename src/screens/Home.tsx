@@ -50,10 +50,7 @@ export default function Home() {
             MORNING PHOTO · NOT TAKEN YET
           </span>
           <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 }}>
-            <div className="col" style={{ gap: 6 }}>
-              <span style={{ fontSize: 26, lineHeight: '30px', fontWeight: 500, letterSpacing: '-0.01em' }}>Start with a photo</span>
-              <span style={{ fontSize: 14, lineHeight: '20px', color: '#d6d6d6' }}>Then a few taps about your skin. About 40 seconds.</span>
-            </div>
+            <span style={{ fontSize: 26, lineHeight: '30px', fontWeight: 500, letterSpacing: '-0.01em' }}>Start with a photo</span>
             <span style={{ width: 60, height: 60, borderRadius: 999, background: '#fff', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
               <Camera />
             </span>
