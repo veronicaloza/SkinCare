@@ -1,36 +1,64 @@
+import { useEffect } from 'react';
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { StoreProvider } from './store';
 import Home from './screens/Home';
-import Checkin from './screens/Checkin';
-import Journal from './screens/Journal';
-import DayDetail from './screens/DayDetail';
-import Insights from './screens/Insights';
-import Patterns from './screens/Patterns';
-import Questions from './screens/Questions';
-import LogStep from './screens/LogStep';
-import LogReview from './screens/LogReview';
-import LogDone from './screens/LogDone';
+import Learn from './screens/Learn';
+import Legend from './screens/Legend';
+import Camera from './screens/Camera';
+import Entry from './screens/Entry';
+import Day from './screens/Day';
+import Album from './screens/Album';
+import Compare from './screens/Compare';
+import Food from './screens/Food';
+import Options from './screens/Options';
+import Routine from './screens/Routine';
+import Product from './screens/Product';
+import Travel from './screens/Travel';
+import Notes from './screens/Notes';
+import Calendar from './screens/Calendar';
+import Reminders from './screens/Reminders';
+
+/** Shrink the desktop phone frame so it always fits the window (no page scroll). */
+function useFitPhone() {
+  useEffect(() => {
+    const fit = () => {
+      const s = Math.min(1, (window.innerHeight - 68) / 844, (window.innerWidth - 68) / 390);
+      document.documentElement.style.setProperty('--fit', String(Math.max(0.4, s)));
+    };
+    fit();
+    window.addEventListener('resize', fit);
+    return () => window.removeEventListener('resize', fit);
+  }, []);
+}
 
 export default function App() {
+  useFitPhone();
   return (
     <StoreProvider>
       <HashRouter>
         <div className="stage">
           <div className="phone">
             <Routes>
-              {/* Section 4 · Black & white: every log becomes a glyph */}
+              {/* 1 · Nav, home, legend, learn */}
               <Route path="/" element={<Home />} />
-              <Route path="/checkin" element={<Checkin />} />
-              <Route path="/journal" element={<Journal />} />
-              <Route path="/day" element={<DayDetail />} />
-              <Route path="/insights" element={<Patterns />} />
-              <Route path="/key" element={<Insights />} />
-              <Route path="/questions" element={<Questions />} />
-              <Route path="/questions/edit" element={<Questions startEdit />} />
-              {/* Section 7 · Log my skin: one slide per question */}
-              <Route path="/log/review" element={<LogReview />} />
-              <Route path="/log/done" element={<LogDone />} />
-              <Route path="/log/:step" element={<LogStep />} />
+              <Route path="/key" element={<Legend />} />
+              <Route path="/learn" element={<Learn />} />
+              {/* 2 · Photo first, then data */}
+              <Route path="/camera" element={<Camera />} />
+              <Route path="/entry" element={<Entry />} />
+              <Route path="/day" element={<Day />} />
+              <Route path="/album" element={<Album />} />
+              <Route path="/compare" element={<Compare />} />
+              {/* 3 · What I ate, products, travel, notes */}
+              <Route path="/food" element={<Food />} />
+              <Route path="/routine" element={<Routine />} />
+              <Route path="/product" element={<Product />} />
+              <Route path="/travel" element={<Travel />} />
+              <Route path="/notes" element={<Notes />} />
+              {/* 4 · Habits: customize, repeat, remind */}
+              <Route path="/options" element={<Options />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/reminders" element={<Reminders />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>

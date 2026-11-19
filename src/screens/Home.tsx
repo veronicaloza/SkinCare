@@ -1,79 +1,111 @@
 import { Link } from 'react-router-dom';
 import Glyph from '../components/Glyph';
 import Nav from '../components/Nav';
-import { IconCalendar, IconPencil, IconPlus } from '../components/Icons';
-import { THIS_WEEK, USER_NAME } from '../data';
-import { describe, parseCode, summary } from '../glyph';
-import { useStore } from '../store';
+import { Bell, Camera, Check } from '../components/Icons';
+import { PHOTO } from '../components/ui';
+import { FEELS } from '../glyph';
+import { itchOf, useStore } from '../store';
 
-const CONDENSED = "'Archivo Narrow', 'Inter Tight', 'Helvetica Neue', Arial, sans-serif";
+const PINNED_FILTER = 'saturate(1.25) contrast(1.06) brightness(0.97)';
 
-/** B1 · Home */
 export default function Home() {
-  const { today } = useStore();
-
-  const week = [
-    ...THIS_WEEK.map((d) => ({ label: d.label, log: d.code === 'x' ? null : parseCode(d.code), state: d.code === 'x' ? 'missed' as const : 'logged' as const, isToday: false })),
-    { label: 'S', log: today, state: today ? 'logged' as const : 'today' as const, isToday: true },
-  ];
+  const { name, loggedAt, entry } = useStore();
+  const now = new Date();
+  const date = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' }).replace(/^(\w+)/, '$1,');
+  const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  const itch = itchOf(entry);
 
   return (
-    <main className="screen" style={{ padding: '56px 24px 32px', fontFamily: CONDENSED }}>
-      <header style={{ display: 'grid', gridTemplateColumns: '44px 1fr 44px', alignItems: 'start' }}>
-        <span />
-        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <h1 style={{ margin: 0, fontSize: 38, lineHeight: '44px', fontWeight: 500, letterSpacing: '-0.01em' }}>Hey {USER_NAME},</h1>
-          <p className="muted" style={{ margin: 0, fontSize: 15, lineHeight: '20px' }}>It’s 8th, Nov, 2026</p>
+    <main className="screen tabbed">
+      <div className="row" style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
+        <div className="col" style={{ gap: 2 }}>
+          <h1 className="h-hello">Hey {name},</h1>
+          <p className="small muted" style={{ margin: 0 }}>{date} · {loggedAt ? 'today is logged' : time}</p>
         </div>
-        <Link to="/journal" aria-label="Open journal" style={{ width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}>
-          <IconCalendar size={28} strokeWidth={1.7} />
-        </Link>
-      </header>
-
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 26 }}>
-        {today ? (
-          <Glyph size={176} log={today} label={`Today’s glyph: ${describe(today)}`} />
-        ) : (
-          <svg width="176" height="176" viewBox="0 0 40 40" aria-hidden="true">
-            <circle cx="20" cy="20" r="19.2" fill="none" stroke="#000" strokeWidth="0.4" strokeLinecap="round" strokeDasharray="0.01 0.75" />
-            <circle cx="20" cy="20" r="7" fill="#000" />
-          </svg>
-        )}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, textAlign: 'center' }}>
-          <h2 style={{ margin: 0, fontSize: 38, lineHeight: '44px', fontWeight: 400, letterSpacing: '-0.01em' }}>
-            {today ? 'Today is logged.' : 'How is your skin doing?'}
-          </h2>
-          {today ? (
-            <>
-              <p className="muted" style={{ margin: 0, fontSize: 15 }}>{summary(today)}</p>
-              <Link to="/log/review" className="circle-btn solid" aria-label="Edit today’s log" style={{ width: 38, height: 38, border: 0 }}>
-                <IconPencil size={16} />
-              </Link>
-            </>
-          ) : (
-            <Link to="/log/1" className="circle-btn solid" aria-label="Start today’s log" style={{ width: 38, height: 38, border: 0 }}>
-              <IconPlus size={18} strokeWidth={1.8} />
-            </Link>
-          )}
+        <div className="row" style={{ gap: 8 }}>
+          <Link to="/reminders" className="iconbtn" aria-label="Reminders"><Bell /></Link>
+          <Link to="/learn" className="iconbtn info" aria-label="Learn how Clearday works">i</Link>
         </div>
       </div>
 
-      <section style={{ display: 'flex', flexDirection: 'column', paddingBottom: 40 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', paddingBottom: 6, borderBottom: '1.5px solid #000' }}>
-          <p style={{ margin: 0, fontSize: 13, lineHeight: '18px' }}>THIS WEEK</p>
-          <Link to="/key" style={{ fontSize: 13, lineHeight: '18px' }}>How to read this</Link>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', paddingTop: 12 }}>
-          {week.map((d, k) => (
-            <div key={k} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-              <Glyph size={30} log={d.log} state={d.state} />
-              <span style={{ fontSize: 12, lineHeight: '16px', fontFamily: 'var(--font)', ...(d.isToday ? { fontWeight: 600 } : {}) }}>{d.label}</span>
+      {loggedAt ? (
+        <Link to="/day" style={{ position: 'relative', display: 'block', height: 236, borderRadius: 28, overflow: 'hidden', textDecoration: 'none', color: '#fff', flexShrink: 0 }}>
+          <img src={PHOTO} alt="Today’s morning photo" className="photo" style={{ objectPosition: 'center 35%' }} />
+          <span style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.65) 100%)' }} />
+          <span className="badge light" style={{ position: 'absolute', left: 16, top: 16, gap: 6, padding: '0 12px' }}>
+            <Check size={14} /> Logged {loggedAt}
+          </span>
+          <span style={{ position: 'absolute', left: 16, right: 16, bottom: 14, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+            <span className="col">
+              <span style={{ fontSize: 22, lineHeight: '26px', fontWeight: 500 }}>Today</span>
+              <span style={{ fontSize: 13, lineHeight: '18px' }}>{FEELS[entry.feel]} skin{itch ? ` · itch ${itch}/5` : ''} · tap for insights</span>
+            </span>
+            <Glyph size={56} disc feel={entry.feel} breakouts={entry.marks.spots} itch={entry.marks.itch} />
+          </span>
+        </Link>
+      ) : (
+        <Link to="/camera" style={{ position: 'relative', height: 236, borderRadius: 28, background: '#000', color: '#fff', textDecoration: 'none', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 20, overflow: 'hidden', flexShrink: 0 }}>
+          <Glyph size={210} feel={3} breakouts itch travel style={{ position: 'absolute', right: -40, top: -30, opacity: 0.35 }} />
+          <span style={{ position: 'relative', alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', height: 28, padding: '0 12px', borderRadius: 999, background: 'rgba(255,255,255,0.16)', fontSize: 12, fontWeight: 600, letterSpacing: '0.04em' }}>
+            MORNING PHOTO · NOT TAKEN YET
+          </span>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 12 }}>
+            <div className="col" style={{ gap: 6 }}>
+              <span style={{ fontSize: 26, lineHeight: '30px', fontWeight: 500, letterSpacing: '-0.01em' }}>Start with a photo</span>
+              <span style={{ fontSize: 14, lineHeight: '20px', color: '#d6d6d6' }}>Then a few taps about your skin. About 40 seconds.</span>
             </div>
-          ))}
+            <span style={{ width: 60, height: 60, borderRadius: 999, background: '#fff', color: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Camera />
+            </span>
+          </div>
+        </Link>
+      )}
+
+      <section className="col" style={{ gap: 10 }}>
+        <div className="row" style={{ alignItems: 'baseline', justifyContent: 'space-between' }}>
+          <h2 className="eyebrow">{loggedAt ? 'Today vs. a day you picked' : 'Two days side by side'}</h2>
+          <Link to="/compare" style={{ fontSize: 13, lineHeight: '18px', fontWeight: 500 }}>{loggedAt ? 'Compare' : 'Change days'}</Link>
         </div>
+        <div className="grid2">
+          {loggedAt ? (
+            <DayTile to="/day" alt="Today" title="Today" />
+          ) : (
+            <DayTile to="/day" alt="Photo from Wednesday 18 November" title="Yesterday" sub="Wed 18 · Meh, itch 3/5" filter="saturate(0.95) brightness(1.03)"
+              glyph={<Glyph size={44} disc feel={3} itch />} />
+          )}
+          <DayTile to="/compare" alt="Photo from Friday 30 October" title="Fri 30 Oct" sub={loggedAt ? undefined : 'Pinned · Rough, breakouts'}
+            inlineSub={loggedAt ? '· before new cleanser' : undefined} filter={PINNED_FILTER} tag={loggedAt ? undefined : 'Before new cleanser'}
+            glyph={loggedAt ? undefined : <Glyph size={44} disc feel={4} breakouts itch travel />} />
+        </div>
+        {loggedAt && (
+          <p className="fill-card" style={{ margin: 0, fontSize: 14, lineHeight: '20px' }}>
+            Fewer breakout days since you switched cleansers: <b style={{ fontWeight: 600 }}>2 in 3 weeks</b>, down from 7.
+          </p>
+        )}
       </section>
 
+      <div className="spacer" />
       <Nav active="home" />
     </main>
+  );
+}
+
+function DayTile({ to, alt, title, sub, inlineSub, filter, tag, glyph }: {
+  to: string; alt: string; title: string; sub?: string; inlineSub?: string; filter?: string; tag?: string; glyph?: React.ReactNode;
+}) {
+  return (
+    <Link to={to} className="col" style={{ gap: 8, textDecoration: 'none', color: '#000' }}>
+      <span style={{ position: 'relative', display: 'block', aspectRatio: '1 / 1', borderRadius: 18, overflow: 'hidden', background: '#e6e6e6' }}>
+        <img src={PHOTO} alt={alt} className="photo" style={{ filter }} />
+        {tag && <span className="badge" style={{ position: 'absolute', left: 8, top: 8, height: 24, padding: '0 8px', fontSize: 11 }}>{tag}</span>}
+        {glyph && <span style={{ position: 'absolute', right: 8, bottom: 8 }}>{glyph}</span>}
+      </span>
+      <span className="col">
+        <span style={{ fontSize: 14, lineHeight: '18px', fontWeight: 600 }}>
+          {title}{inlineSub && <span style={{ fontWeight: 400, color: '#5c5c5c' }}> {inlineSub}</span>}
+        </span>
+        {sub && <span style={{ fontSize: 12, lineHeight: '16px', color: '#5c5c5c' }}>{sub}</span>}
+      </span>
+    </Link>
   );
 }
