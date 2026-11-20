@@ -41,6 +41,9 @@ input[type='range'] { accent-color: #000; }
 .screen.dark { background: #000; color: #fff; }
 .scroll { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; margin: 0 -24px; padding: 0 24px; }
 .spacer { flex: 1; }
+/* Scrolls by touch / wheel without showing a scrollbar */
+.no-bar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-bar::-webkit-scrollbar { display: none; }
 .col { display: flex; flex-direction: column; }
 .row { display: flex; align-items: center; }
 .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }

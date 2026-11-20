@@ -73,3 +73,6 @@ export function useStore() {
 
 /** Itch level shown on summaries (prototype: itchy = 2/5). */
 export const itchOf = (e: Entry) => (e.marks.itch ? 2 : 0);
+
+/** Today's entry as a 4-char glyph code (feel, breakouts, itch, travel). */
+export const codeOfEntry = (e: Entry) => `${e.feel}${e.marks.spots ? 1 : 0}${itchOf(e)}0`;
