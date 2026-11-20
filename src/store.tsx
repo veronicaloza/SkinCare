@@ -34,6 +34,9 @@ interface Store {
   food: Food;
   foodOptions: string[];
   routine: Routine;
+  /** Days logged in bulk from the calendar: "y-m-d" → glyph code. */
+  bulk: Record<string, string>;
+  logDays: (codes: Record<string, string>) => void;
   setEntry: (e: Partial<Entry>) => void;
   setFood: (f: Partial<Food>) => void;
   setFoodOptions: (o: string[]) => void;
@@ -52,15 +55,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [foodOptions, setFoodOptions] = useState(['Dairy', 'Oat milk', 'Sweets', 'Gluten', 'Fried food', 'Spicy food']);
   const [routine, setRoutineS] = useState<Routine>({ done: [{ 0: true, 1: true }, {}], skipped: false });
 
+  const [bulk, setBulk] = useState<Record<string, string>>({});
+
   const value = useMemo<Store>(() => ({
     name: 'Eric',
-    loggedAt, entry, food, foodOptions, routine,
+    loggedAt, entry, food, foodOptions, routine, bulk,
+    logDays: (codes) => setBulk((b) => ({ ...b, ...codes })),
     setEntry: (e) => setEntryS((s) => ({ ...s, ...e })),
     setFood: (f) => setFoodS((s) => ({ ...s, ...f })),
     setFoodOptions,
     setRoutine: (r) => setRoutineS((s) => ({ ...s, ...r })),
     saveToday: () => setLoggedAt(new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })),
-  }), [loggedAt, entry, food, foodOptions, routine]);
+  }), [loggedAt, entry, food, foodOptions, routine, bulk]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
