@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
+import { NOW, pastCode } from './history';
 
 export interface Entry {
   /** 0 Great … 4 Rough */
@@ -82,3 +83,14 @@ export const itchOf = (e: Entry) => (e.marks.itch ? 2 : 0);
 
 /** Today's entry as a 4-char glyph code (feel, breakouts, itch, travel). */
 export const codeOfEntry = (e: Entry) => `${e.feel}${e.marks.spots ? 1 : 0}${itchOf(e)}0`;
+
+/** Code for any day: bulk-logged days, then today's entry, then demo history. */
+export function useCodeAt() {
+  const { bulk, loggedAt, entry } = useStore();
+  return (y: number, m: number, d: number): string | null => {
+    const b = bulk[`${y}-${m}-${d}`];
+    if (b) return b;
+    if (y === NOW.y && m === NOW.m && d === NOW.d) return loggedAt ? codeOfEntry(entry) : null;
+    return pastCode(y, m, d);
+  };
+}
